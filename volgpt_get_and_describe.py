@@ -77,25 +77,25 @@ def volgpt_describe(AAPL_stats, JPM_stats, df_data_AAPL, df_data_JPM, AAPL_rr, J
             "Kurtosis = %.5f" % JPM_stats.kurtosis)
       
       # Augmented Dickey-Fuller test for stationarity of log returns, NB: ADF tests take some time to run
-      print()  # Print blank line
-      print("Augmented Dickey-Fuller test for AAPL log returns:")
-      AAPL_lr_clean = AAPL_lr.dropna()  # Drop NaN values
-      result = adfuller(AAPL_lr_clean)
-      print('ADF Statistic: %f' % result[0])
-      print('p-value: %f' % result[1])
-      print('Critical Values:')
-      for key, value in result[4].items():
-            print('\t%s: %.3f' % (key, value))
+      # print()  # Print blank line
+      # print("Augmented Dickey-Fuller test for AAPL log returns:")
+      # AAPL_lr_clean = AAPL_lr.dropna()  # Drop NaN values
+      # result = adfuller(AAPL_lr_clean)
+      # print('ADF Statistic: %f' % result[0])
+      # print('p-value: %f' % result[1])
+      # print('Critical Values:')
+      # for key, value in result[4].items():
+      #       print('\t%s: %.3f' % (key, value))
 
-      print()  # Print blank line
-      print("Augmented Dickey-Fuller test for JPM log returns:")
-      JPM_lr_clean = JPM_lr.dropna()  # Drop NaN values
-      result = adfuller(JPM_lr_clean)
-      print('ADF Statistic: %f' % result[0])
-      print('p-value: %f' % result[1])
-      print('Critical Values:')
-      for key, value in result[4].items():
-            print('\t%s: %.3f' % (key, value))
+      # print()  # Print blank line
+      # print("Augmented Dickey-Fuller test for JPM log returns:")
+      # JPM_lr_clean = JPM_lr.dropna()  # Drop NaN values
+      # result = adfuller(JPM_lr_clean)
+      # print('ADF Statistic: %f' % result[0])
+      # print('p-value: %f' % result[1])
+      # print('Critical Values:')
+      # for key, value in result[4].items():
+      #       print('\t%s: %.3f' % (key, value))
       print()  # Print blank line
 
       sns.set_theme(style='darkgrid')  # Set Seaborn dark theme
