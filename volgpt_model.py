@@ -8,7 +8,7 @@ def train_and_generate(text_file_path, max_iters=5000, learning_rate=1e-3, devic
     # hyperparameters
     batch_size = 16 # how many independent sequences will we process in parallel?
     block_size = 32 # what is the maximum context length for predictions?
-    max_iters = 5000
+    max_iters = max_iters # training iterations
     eval_interval = 100
     learning_rate = 1e-3
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
