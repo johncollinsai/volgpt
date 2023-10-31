@@ -21,7 +21,10 @@ Volatility prediction is used in risk management to estimate the potential fluct
 
 * The nanoGPT model is written in the volgpt_model.py file.  The train_and_generate function trains the model on a given text file and generates new text. The function accepts several arguments (i.e., text_file_path, the path to the input text file; max_iters, the maximum number of iterations to run the training loop (I set a default: 5000); learning_rate, for the optimizer (default: 1e-3); device, so that operations can be passed to the GPU; and max_new_tokens, the maximum number of new tokens to generate (default: 5000). It then tokenizes the input text, splits it into training, validation, and test sets, and defines a simple bigram language model using Karpathy's transformer architecture with multi-head self-attention. It trains the model in a loop for max_iters iterations and evaluates the loss periodically on the train, validation, and test sets. After training, the function generates new text using the trained model and returns a tuple containing the test data tensor, the generated text, and a mapping from indices to characters (itos).
 
-## Code
+## Code samples
+
+The following examples illustrate the organisation and structure of my code in this project.
+
 ### Data Cleaning (volgpt_clean_data.py)
 
 ```python
@@ -81,7 +84,6 @@ I think these results are very interesting because they show that it is possible
 
 ### License
 volgpt is released under the MIT License.
-```
 
 
 
