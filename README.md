@@ -1,8 +1,11 @@
 # volgpt
+![volgpt](jenny-saville-2.png)
 
-### Code repo for post: Using a GPT for volatility prediction in risk management
+## Using a GPT for volatility prediction in risk management
 
-* In this post, I explore the use of LLMs for tasks that are typically performed by models more specific to asset pricing and risk management. I train Karpathy's __[nanoGPT](https://johncollinsai-nanogpt-voqqf4ls3a-as.a.run.app/)__ on high-frequency (tick-by-tick) data for __[AAPL](https://www.google.com/search?q=aapl&oq=AAPL&aqs=chrome.0.0i512l5j69i61l3.1590j1j9&sourceid=chrome&ie=UTF-8)__ and __[JPM](https://www.google.com/search?q=jpm+stock+price&oq=JPM+stock+pri&aqs=chrome.0.0i512j69i57j0i512l8.4577j1j9&sourceid=chrome&ie=UTF-8)__. I want to see how nanoGPT performs as a volatility predictor.  Volatility prediction is used in risk management to estimate the potential fluctuations in the value of an asset or portfolio over a given period of time. Volatility, the second moment, is a measure of how much the return fluctuates around its mean, and it is a key input in risk management models used by financial institutions and required by regulators. 
+In this post, I explore the use of LLMs for tasks that are typically performed by models more specific to asset pricing and risk management. I train Karpathy's __[nanoGPT](https://johncollinsai-nanogpt-voqqf4ls3a-as.a.run.app/)__ on high-frequency (tick-by-tick) data for __[AAPL](https://www.google.com/search?q=aapl&oq=AAPL&aqs=chrome.0.0i512l5j69i61l3.1590j1j9&sourceid=chrome&ie=UTF-8)__ and __[JPM](https://www.google.com/search?q=jpm+stock+price&oq=JPM+stock+pri&aqs=chrome.0.0i512j69i57j0i512l8.4577j1j9&sourceid=chrome&ie=UTF-8)__. I want to see how nanoGPT performs as a volatility predictor.
+
+Volatility prediction is used in risk management to estimate the potential fluctuations in the value of an asset or portfolio over a given period of time. Volatility, the second moment, is a measure of how much the return fluctuates around its mean, and it is a key input in risk management models used by financial institutions and required by regulators.
 
 * The established model classes for vol prediction include stochastic volatility models such as the __[MSM](https://github.com/johncollinsai/markov-switching-multifractal)__ of Calvet & Fisher, ARCH and GARCH, and Jump Diffusion models. Deep learning is also used for vol prediction and this __[post](https://johncollinsai-deep-learning-finance-voqqf4ls3a-as.a.run.app/)__ provides colour. However, the application of LLMs to this problem is quite novel and the use of nanoGPT provides a great basis for an under-the-hood examination of the application of text-to-text LLMs to numeric problems.
 
@@ -18,6 +21,72 @@
 
 * The nanoGPT model is written in the volgpt_model.py file.  The train_and_generate function trains the model on a given text file and generates new text. The function accepts several arguments (i.e., text_file_path, the path to the input text file; max_iters, the maximum number of iterations to run the training loop (I set a default: 5000); learning_rate, for the optimizer (default: 1e-3); device, so that operations can be passed to the GPU; and max_new_tokens, the maximum number of new tokens to generate (default: 5000). It then tokenizes the input text, splits it into training, validation, and test sets, and defines a simple bigram language model using Karpathy's transformer architecture with multi-head self-attention. It trains the model in a loop for max_iters iterations and evaluates the loss periodically on the train, validation, and test sets. After training, the function generates new text using the trained model and returns a tuple containing the test data tensor, the generated text, and a mapping from indices to characters (itos).
 
-* NanoGPT appears to perform well under this setup. The MSE's (0.05078798 and 0.00000192 respectively) and MAEs (0.17065891 and 0.00099668) are low and paired t-tests (raw returns T-stat = 0.69149665, p-value = 0.50499000 and log returns T-stat = 0.71337283, p-value = 0.49192750) indicate there is no significant difference between predicted and true values. This suggests good predictive performance, but it's difficult to determine the overall quality of the predictions without comparing them to the performance of other models or benchmarks in the same context. 
+## Code
+### Data Cleaning (volgpt_clean_data.py)
 
-* I think these results are very interesting because they show that it is possible to convert numbers to text and train a LLM to understand patterns in data that enable forward prediction of volatility with a level accuracy comparible to asset pricing models built specifically for the purpose.  This suggests that LLMs can be used in a variety of ways for asset pricing and risk management.
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime
+from io import StringIO
+
+def clean_data(text_data, column_names=None):
+    # ... rest of the code ...
+
+    return df, df_clean, invalid_rows
+```
+
+In the `clean_data` function, text data is read into a DataFrame, which is then cleaned to ensure valid numeric values and date formats.
+
+### High Frequency Data Preparation (volgpt_data.py)
+
+```python
+import os
+import glob
+import pandas as pd
+import numpy as np
+from scipy import stats
+
+def high_frequency_data(dp=2):
+    # ... rest of the code ...
+
+    return (df_data_AAPL, df_data_JPM, AAPL_rr, JPM_rr, AAPL_lr, JPM_lr, AAPL_stats, JPM_stats)
+```
+
+In the `high_frequency_data` function, high-frequency data is read from files, processed to compute the WeightedMidPrice, raw returns, and log returns, and formatted for tractability. The function returns DataFrames for AAPL and JPM, their respective raw and log returns, and descriptive statistics.
+
+### Model Implementation (volgpt_model.py)
+
+The `train_and_generate` function in `volgpt_model.py` file trains a language model on a provided text file and generates new text based on the high-frequency financial data.
+
+```python
+from volgpt_model import train_and_generate
+
+# Training and generating text
+text_file_path = 'path_to_your_text_file.txt'
+training_results = train_and_generate(text_file_path)
+
+# The function returns a tuple containing the test data tensor,
+# the generated text when the training loop finishes, and the character-to-integer mapping.
+test_data, generated_text, itos_mapping = training_results
+```
+
+### Results
+
+NanoGPT appears to perform well under this setup. The MSE's (0.05078798 and 0.00000192 respectively) and MAEs (0.17065891 and 0.00099668) are low and paired t-tests (raw returns T-stat = 0.69149665, p-value = 0.50499000 and log returns T-stat = 0.71337283, p-value = 0.49192750) indicate there is no significant difference between predicted and true values. This suggests good predictive performance, but it's difficult to determine the overall quality of the predictions without comparing them to the performance of other models or benchmarks in the same context.
+
+### Conclusion
+
+I think these results are very interesting because they show that it is possible to convert numbers to text and train a LLM to understand patterns in data that enable forward prediction of volatility with a level accuracy comparable to asset pricing models built specifically for the purpose. This suggests that LLMs can be used in a variety of ways for asset pricing and risk management.
+
+### License
+volgpt is released under the MIT License.
+```
+
+
+
+
+
+
+
+
