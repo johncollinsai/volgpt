@@ -1,5 +1,5 @@
 # volgpt
-![volgpt](jenny-saville-2.png)
+![volgpt](volgpt.png)
 
 ## Using a GPT for volatility prediction in risk management
 
